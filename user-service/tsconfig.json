@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",                     // Целевая версия JS
+    "module": "CommonJS",                   // Модульная система Node.js
+    "outDir": "./dist",                     // Папка для скомпилированных файлов
+    "rootDir": "./src",                     // Корневая папка исходников
+    "strict": true,                        // Включить строгую типизацию
+    "esModuleInterop": true,               // Для удобного импорта CommonJS модулей
+    "skipLibCheck": true,                  // Пропуск проверки типов в node_modules
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "noImplicitAny": true,
+    "moduleResolution": "node",
+    "sourceMap": true                      // Генерация sourcemap для отладки
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules", "dist"]
+}
