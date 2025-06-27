@@ -1,3 +1,5 @@
+version: "3.8"
+
 services:
   mongo:
     image: mongo:6.0
@@ -7,6 +9,8 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
+    networks:
+      - app-network
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -18,13 +22,14 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - app-network
 
   api-gateway:
     build:
       context: ./api-gateway
       dockerfile: Dockerfile
     container_name: api-gateway
-    restart: unless-stopped
     ports:
       - "5000:5000"
     environment:
@@ -39,6 +44,8 @@ services:
     depends_on:
       - courses-service
       - user-service
+    networks:
+      - app-network
 
   courses-service:
     build:
@@ -56,6 +63,8 @@ services:
     depends_on:
       - mongo
       - rabbitmq
+    networks:
+      - app-network
 
   user-service:
     build:
@@ -71,6 +80,12 @@ services:
       - JWT_SECRET=xexe
     depends_on:
       - mongo
+    networks:
+      - app-network
 
 volumes:
   mongo-data:
+
+networks:
+  app-network:
+    driver: bridge

@@ -3,12 +3,12 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 import { createProxyMiddleware } from 'http-proxy-middleware';
-
 import { authenticateToken } from './middlewares/authenticateToken';
 import { loggingMiddleware } from './middlewares/loggingMiddleware';
 import { errorHandler } from './middlewares/errorHandler';
 
 const app = express();
+const PORT = Number(process.env.PORT) || 5000;
 
 app.use(cors());
 app.use(helmet());
@@ -60,5 +60,9 @@ app.get('/health', (req, res) => {
 });
 
 app.use(errorHandler);
+
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`API Gateway started on port ${PORT}`);
+});
 
 export default app;
