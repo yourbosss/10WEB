@@ -1,8 +1,8 @@
-import amqp, { Connection, Channel, ConsumeMessage } from 'amqplib';
+import amqp, { ConsumeMessage } from 'amqplib';
 
 export class RabbitMQService {
-  private connection: Connection | null = null;
-  private channel: Channel | null = null;
+  private connection: any = null; // убрали тип Connection для избежания ошибок
+  private channel: any = null;    // убрали тип Channel
   private readonly url: string;
   private readonly exchangeName: string;
 
@@ -20,7 +20,12 @@ export class RabbitMQService {
       await this.closeConnection();
     }
     this.connection = await amqp.connect(this.url);
-    this.connection.on('error', (err) => {
+
+    if (!this.connection) {
+      throw new Error('Не удалось установить соединение с RabbitMQ');
+    }
+
+    this.connection.on('error', (err: any) => {
       console.error('RabbitMQ connection error:', err);
       this.connection = null;
     });
@@ -37,8 +42,14 @@ export class RabbitMQService {
       throw new Error('Нет активного соединения для создания канала');
     }
     this.channel = await this.connection.createChannel();
+
+    if (!this.channel) {
+      throw new Error('Не удалось создать канал RabbitMQ');
+    }
+
     await this.channel.assertExchange(this.exchangeName, 'direct', { durable: true });
-    this.channel.on('error', (err) => {
+
+    this.channel.on('error', (err: any) => {
       console.error('RabbitMQ channel error:', err);
       this.channel = null;
     });
@@ -86,10 +97,10 @@ export class RabbitMQService {
 
         try {
           await handler(msg);
-          this.channel!.ack(msg);
+          this.channel.ack(msg);
         } catch (err) {
           console.error('Ошибка обработки сообщения:', err);
-          this.channel!.nack(msg, false, true); // повторная попытка
+          this.channel.nack(msg, false, true); // повторная попытка
         }
       },
       { noAck: false }

@@ -1,7 +1,7 @@
-import amqp, { Connection, Channel, ConsumeMessage } from 'amqplib';
+import amqp, { ChannelModel, Channel, ConsumeMessage } from 'amqplib';
 
 export class RabbitMQService {
-  private connection: Connection | null = null;
+  private connection: ChannelModel | null = null;
   private channel: Channel | null = null;
   private readonly url: string;
   private readonly exchangeName: string;
@@ -21,12 +21,15 @@ export class RabbitMQService {
 
     this.connection = await amqp.connect(this.url);
 
-    // Добавляем проверку на null, чтобы убрать ошибку TS
-    if (!this.connection.createChannel) {
-      throw new Error('Connection object does not have createChannel method');
+    if (!this.connection) {
+      throw new Error('Failed to establish RabbitMQ connection');
     }
 
     this.channel = await this.connection.createChannel();
+
+    if (!this.channel) {
+      throw new Error('Failed to create RabbitMQ channel');
+    }
 
     await this.channel.assertExchange(this.exchangeName, 'direct', { durable: true });
 
@@ -65,7 +68,6 @@ export class RabbitMQService {
     if (!this.channel) {
       await this.connect();
     }
-
     const channel = this.getChannel();
 
     const buffer = Buffer.from(JSON.stringify(message));
@@ -80,7 +82,6 @@ export class RabbitMQService {
     if (!this.channel) {
       await this.connect();
     }
-
     const channel = this.getChannel();
 
     await channel.assertQueue(queue, { durable: true });

@@ -4,23 +4,25 @@ WORKDIR /app
 
 COPY package*.json ./
 
-RUN yarn install --frozen-lockfile
+# Устанавливаем все зависимости, включая dev
+RUN yarn install --frozen-lockfile --production=false
 
 COPY tsconfig.json ./
 COPY src ./src
 
 RUN npx tsc
 
+# Финальный образ
 FROM node:18-alpine
 
 WORKDIR /app
 
-COPY --from=builder /app/package*.json ./
-COPY --from=builder /app/node_modules ./node_modules
+COPY package*.json ./
+
+RUN yarn install --production --frozen-lockfile
+
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/.env ./
 
 EXPOSE 5000
-
 
 CMD ["node", "dist/app.js"]
