@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { Tag, ITag } from '../models/tag.model';
 
-// Получить все теги
 export const getTags = async (
   req: Request,
   res: Response,
@@ -15,7 +14,6 @@ export const getTags = async (
   }
 };
 
-// Создать тег
 export const createTag = async (
   req: Request,
   res: Response,
@@ -24,13 +22,13 @@ export const createTag = async (
   try {
     const { name } = req.body;
     if (!name) {
-      res.status(400).json({ message: 'Название тега обязательно' });
+      res.status(400).json({ message: 'Tag name is required' });
       return;
     }
 
     const existing = await Tag.findOne({ name }).exec();
     if (existing) {
-      res.status(400).json({ message: 'Такой тег уже существует' });
+      res.status(400).json({ message: 'Tag already exists' });
       return;
     }
 
@@ -43,7 +41,6 @@ export const createTag = async (
   }
 };
 
-// Удалить тег
 export const deleteTag = async (
   req: Request,
   res: Response,
@@ -53,10 +50,10 @@ export const deleteTag = async (
     const tagId = req.params.id;
     const tag = await Tag.findByIdAndDelete(tagId).exec();
     if (!tag) {
-      res.status(404).json({ message: 'Тег не найден' });
+      res.status(404).json({ message: 'Tag not found' });
       return;
     }
-    res.json({ message: 'Тег удалён' });
+    res.json({ message: 'Tag deleted' });
   } catch (error) {
     next(error);
   }

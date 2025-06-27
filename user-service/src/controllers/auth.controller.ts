@@ -11,13 +11,13 @@ export const registerUser = async (
   try {
     const { username, password, role } = req.body;
     if (!username || !password) {
-      res.status(400).json({ message: 'Логин и пароль обязательны' });
+      res.status(400).json({ message: 'Username and password are required' });
       return;
     }
 
     const existingUser = await User.findOne({ username }).exec() as IUser | null;
     if (existingUser) {
-      res.status(400).json({ message: 'Пользователь уже существует' });
+      res.status(400).json({ message: 'User already exists' });
       return;
     }
 
@@ -38,7 +38,7 @@ export const registerUser = async (
     if (error instanceof Error) {
       next(error);
     } else {
-      next(new Error('Неизвестная ошибка'));
+      next(new Error('Unknown error'));
     }
   }
 };
@@ -51,19 +51,19 @@ export const loginUser = async (
   try {
     const { username, password } = req.body;
     if (!username || !password) {
-      res.status(400).json({ message: 'Логин и пароль обязательны' });
+      res.status(400).json({ message: 'Username and password are required' });
       return;
     }
 
     const user = await User.findOne({ username }).exec() as IUser | null;
     if (!user) {
-      res.status(401).json({ message: 'Неверный логин или пароль' });
+      res.status(401).json({ message: 'Invalid username or password' });
       return;
     }
 
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      res.status(401).json({ message: 'Неверный логин или пароль' });
+      res.status(401).json({ message: 'Invalid username or password' });
       return;
     }
 
@@ -75,7 +75,7 @@ export const loginUser = async (
     if (error instanceof Error) {
       next(error);
     } else {
-      next(new Error('Неизвестная ошибка'));
+      next(new Error('Unknown error'));
     }
   }
 };

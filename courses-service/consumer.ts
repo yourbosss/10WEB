@@ -7,9 +7,9 @@ const startConsumer = async () => {
   try {
     await rabbitMQ.connect();
     await rabbitMQ.consume('course-queue', 'course-routing-key', courseMessageHandler);
-    console.log('RabbitMQ consumer запущен');
+    console.log('RabbitMQ consumer started');
   } catch (error) {
-    console.error('Ошибка запуска consumer:', error);
+    console.error('Error starting consumer:', error);
     process.exit(1);
   }
 };

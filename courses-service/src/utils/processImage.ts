@@ -3,15 +3,14 @@ import path from 'path';
 import fs from 'fs/promises';
 
 interface ProcessImageOptions {
-  width?: number;        // Максимальная ширина
-  height?: number;       // Максимальная высота
-  rotate?: number;       // Поворот в градусах (90, 180, 270)
-  format?: 'jpeg' | 'png' | 'webp'; // Формат выходного файла
-  quality?: number;      // Качество сжатия (для jpeg/webp), 1-100
+  width?: number;
+  height?: number;
+  rotate?: number;
+  format?: 'jpeg' | 'png' | 'webp';
+  quality?: number;
 }
 
 export class ProcessImage {
-  // Обрабатывает изображение по пути inputPath и сохраняет в outputPath
   public async processImage(
     inputPath: string,
     outputPath: string,
@@ -26,8 +25,8 @@ export class ProcessImage {
 
       if (options.width || options.height) {
         image = image.resize(options.width, options.height, {
-          fit: 'inside', // сохраняет пропорции, не превышая размеры
-          withoutEnlargement: true, // не увеличивает если меньше
+          fit: 'inside',
+          withoutEnlargement: true,
         });
       }
 
@@ -42,22 +41,19 @@ export class ProcessImage {
           image = image.webp({ quality: options.quality ?? 80 });
           break;
         default:
-          // Если формат не указан, сохраняем в исходном формате
           break;
       }
 
       await image.toFile(outputPath);
     } catch (error) {
-      throw new Error(`Ошибка обработки изображения: ${error}`);
+      throw new Error(`Image processing error: ${error}`);
     }
   }
 
-  // Удаляет файл по пути, если нужно
   public async deleteFile(filePath: string): Promise<void> {
     try {
       await fs.unlink(filePath);
     } catch (error) {
-      // Игнорируем ошибку, если файла нет
       if ((error as NodeJS.ErrnoException).code !== 'ENOENT') {
         throw error;
       }

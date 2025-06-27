@@ -1,5 +1,4 @@
 services:
-  # MongoDB — общая база для микросервисов
   mongo:
     image: mongo:6.0
     container_name: mongo
@@ -9,14 +8,13 @@ services:
     volumes:
       - mongo-data:/data/db
 
-  # RabbitMQ — брокер сообщений
   rabbitmq:
     image: rabbitmq:3-management
     container_name: rabbitmq
     restart: unless-stopped
     ports:
-      - "5672:5672" # основной порт RabbitMQ
-      - "15672:15672" # веб-интерфейс управления
+      - "5672:5672"
+      - "15672:15672"
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest

@@ -1,5 +1,5 @@
 import { ConsumeMessage } from 'amqplib';
-import { Course } from '../models/course.model'; // Твоя модель курса
+import { Course } from '../models/course.model'; 
 import mongoose from 'mongoose';
 
 interface CourseMessage {
@@ -11,7 +11,6 @@ interface CourseMessage {
     instructorId: string;
     tags?: string[];
     thumbnailUrl?: string;
-    // другие поля курса
   };
 }
 
@@ -24,7 +23,7 @@ export const courseMessageHandler = async (msg: ConsumeMessage): Promise<void> =
       case 'create': {
         const courseExists = await Course.findById(data.course._id).exec();
         if (courseExists) {
-          console.log(`Курс с id ${data.course._id} уже существует`);
+          console.log(`Course with id ${data.course._id} already exists`);
           break;
         }
         const course = new Course({
@@ -36,7 +35,7 @@ export const courseMessageHandler = async (msg: ConsumeMessage): Promise<void> =
           thumbnailUrl: data.course.thumbnailUrl || '',
         });
         await course.save();
-        console.log(`Курс создан: ${course._id}`);
+        console.log(`Course created: ${course._id}`);
         break;
       }
       case 'update': {
@@ -53,26 +52,26 @@ export const courseMessageHandler = async (msg: ConsumeMessage): Promise<void> =
         ).exec();
 
         if (updated) {
-          console.log(`Курс обновлён: ${updated._id}`);
+          console.log(`Course updated: ${updated._id}`);
         } else {
-          console.warn(`Курс для обновления не найден: ${data.course._id}`);
+          console.warn(`Course not found for update: ${data.course._id}`);
         }
         break;
       }
       case 'delete': {
         const deleted = await Course.findByIdAndDelete(data.course._id).exec();
         if (deleted) {
-          console.log(`Курс удалён: ${deleted._id}`);
+          console.log(`Course deleted: ${deleted._id}`);
         } else {
-          console.warn(`Курс для удаления не найден: ${data.course._id}`);
+          console.warn(`Course not found for deletion: ${data.course._id}`);
         }
         break;
       }
       default:
-        console.warn(`Неизвестное действие: ${data.action}`);
+        console.warn(`Unknown action: ${data.action}`);
     }
   } catch (error) {
-    console.error('Ошибка обработки сообщения курса:', error);
-    throw error; // чтобы RabbitMQ повторил попытку
+    console.error('Error processing course message:', error);
+    throw error; 
   }
 };

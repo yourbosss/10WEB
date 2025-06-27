@@ -6,7 +6,6 @@ import { authorizeRoles } from '../middlewares/authorizeRoles';
 const router = Router();
 const enrollmentController = new EnrollmentController();
 
-// Записаться на курс могут только авторизованные студенты
 router.post(
   '/',
   authenticateToken,
@@ -14,7 +13,6 @@ router.post(
   enrollmentController.enrollCourse
 );
 
-// Получить список своих записей могут только авторизованные студенты
 router.get(
   '/',
   authenticateToken,

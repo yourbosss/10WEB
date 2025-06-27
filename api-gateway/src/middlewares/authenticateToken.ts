@@ -9,12 +9,12 @@ export const authenticateToken = (
   req: Request,
   res: Response,
   next: NextFunction
-): void => {  // Здесь void, без Response в возвращаемом типе
+): void => {  
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    res.status(401).json({ message: 'Токен не предоставлен' });
-    return; // обязательно return после отправки ответа
+    res.status(401).json({ message: 'Token not provided' });
+    return; 
   }
 
   const token = authHeader.split(' ')[1];
@@ -27,7 +27,7 @@ export const authenticateToken = (
 
     next();
   } catch {
-    res.status(401).json({ message: 'Неверный или просроченный токен' });
-    return; // обязательно return после отправки ответа
+    res.status(401).json({ message: 'Invalid or expired token' });
+    return; 
   }
 };

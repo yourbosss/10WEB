@@ -37,13 +37,13 @@ export class CourseController extends ControllerWrapper {
     public getCourseById = this.wrap(async (req: Request, res: Response) => {
         const courseId = req.params.id;
         if (!mongoose.Types.ObjectId.isValid(courseId)) {
-            res.status(400).json({ message: 'Неверный ID курса' });
+            res.status(400).json({ message: 'Invalid course ID' });
             return;
         }
 
         const course = await Course.findById(courseId).exec();
         if (!course) {
-            res.status(404).json({ message: 'Курс не найден' });
+            res.status(404).json({ message: 'Course not found' });
             return;
         }
 
@@ -55,12 +55,12 @@ export class CourseController extends ControllerWrapper {
         const instructorId = (req as any).user?.id;
 
         if (!instructorId) {
-            res.status(401).json({ message: 'Неавторизованный' });
+            res.status(401).json({ message: 'Unauthorized' });
             return;
         }
 
         if (!title || !description) {
-            res.status(400).json({ message: 'Название и описание обязательны' });
+            res.status(400).json({ message: 'Title and description are required' });
             return;
         }
 
@@ -80,7 +80,7 @@ export class CourseController extends ControllerWrapper {
     public updateCourse = this.wrap(async (req: Request, res: Response) => {
         const courseId = req.params.id;
         if (!mongoose.Types.ObjectId.isValid(courseId)) {
-            res.status(400).json({ message: 'Неверный ID курса' });
+            res.status(400).json({ message: 'Invalid course ID' });
             return;
         }
 
@@ -88,7 +88,7 @@ export class CourseController extends ControllerWrapper {
 
         const course = await Course.findByIdAndUpdate(courseId, updateData, { new: true }).exec();
         if (!course) {
-            res.status(404).json({ message: 'Курс не найден' });
+            res.status(404).json({ message: 'Course not found' });
             return;
         }
 
@@ -98,16 +98,16 @@ export class CourseController extends ControllerWrapper {
     public deleteCourse = this.wrap(async (req: Request, res: Response) => {
         const courseId = req.params.id;
         if (!mongoose.Types.ObjectId.isValid(courseId)) {
-            res.status(400).json({ message: 'Неверный ID курса' });
+            res.status(400).json({ message: 'Invalid course ID' });
             return;
         }
 
         const course = await Course.findByIdAndDelete(courseId).exec();
         if (!course) {
-            res.status(404).json({ message: 'Курс не найден' });
+            res.status(404).json({ message: 'Course not found' });
             return;
         }
 
-        res.json({ message: 'Курс удалён' });
+        res.json({ message: 'Course deleted' });
     });
 }

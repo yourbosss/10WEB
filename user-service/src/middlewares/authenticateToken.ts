@@ -6,7 +6,6 @@ interface JwtPayload {
   role: string;
 }
 
-// Расширяем Request, чтобы добавить поле user с типом JwtPayload
 interface AuthenticatedRequest extends Request {
   user?: JwtPayload;
 }
@@ -19,7 +18,7 @@ export const authenticateToken = (
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
-    res.status(401).json({ message: 'Токен не найден' });
+    res.status(401).json({ message: 'Token not found' });
     return;
   }
 
@@ -30,6 +29,6 @@ export const authenticateToken = (
     req.user = decoded;
     next();
   } catch (error) {
-    res.status(401).json({ message: 'Неверный токен' });
+    res.status(401).json({ message: 'Invalid token' });
   }
 };

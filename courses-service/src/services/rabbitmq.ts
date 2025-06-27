@@ -1,8 +1,26 @@
-import amqp, { ChannelModel, Channel, ConsumeMessage } from 'amqplib';
+import * as amqp from 'amqplib';
+
+interface IRabbitMQConnection {
+  createChannel(): Promise<IRabbitMQChannel>;
+  close(): Promise<void>;
+  on(event: 'error' | 'close', listener: (err?: Error) => void): this;
+}
+
+interface IRabbitMQChannel {
+  assertExchange(exchange: string, type: string, options?: object): Promise<void>;
+  assertQueue(queue: string, options?: object): Promise<void>;
+  bindQueue(queue: string, exchange: string, pattern: string): Promise<void>;
+  consume(queue: string, onMessage: (msg: any) => void, options?: object): Promise<void>;
+  publish(exchange: string, routingKey: string, content: Buffer, options?: object): boolean;
+  ack(message: any): void;
+  nack(message: any, allUpTo?: boolean, requeue?: boolean): void;
+  close(): Promise<void>;
+  on(event: 'error' | 'close', listener: (err?: Error) => void): this;
+}
 
 export class RabbitMQService {
-  private connection: ChannelModel | null = null;
-  private channel: Channel | null = null;
+  private connection: IRabbitMQConnection | null = null;
+  private channel: IRabbitMQChannel | null = null;
   private readonly url: string;
   private readonly exchangeName: string;
 
@@ -19,23 +37,22 @@ export class RabbitMQService {
       await this.close();
     }
 
-    this.connection = await amqp.connect(this.url);
+    const connUnknown: unknown = await amqp.connect(this.url);
 
-    if (!this.connection) {
-      throw new Error('Failed to establish RabbitMQ connection');
+    if (!this.isConnection(connUnknown)) {
+      throw new Error('Failed to establish RabbitMQ connection with required interface');
     }
+
+    this.connection = connUnknown;
 
     this.channel = await this.connection.createChannel();
-
-    if (!this.channel) {
-      throw new Error('Failed to create RabbitMQ channel');
-    }
 
     await this.channel.assertExchange(this.exchangeName, 'direct', { durable: true });
 
     this.connection.on('error', (err) => {
       console.error('RabbitMQ connection error:', err);
       this.connection = null;
+      this.channel = null;
     });
 
     this.connection.on('close', () => {
@@ -57,7 +74,20 @@ export class RabbitMQService {
     console.log('RabbitMQ connected and channel created');
   }
 
-  private getChannel(): Channel {
+  private isConnection(obj: unknown): obj is IRabbitMQConnection {
+    return (
+      typeof obj === 'object' &&
+      obj !== null &&
+      'createChannel' in obj &&
+      typeof (obj as any).createChannel === 'function' &&
+      'close' in obj &&
+      typeof (obj as any).close === 'function' &&
+      'on' in obj &&
+      typeof (obj as any).on === 'function'
+    );
+  }
+
+  private getChannel(): IRabbitMQChannel {
     if (!this.channel) {
       throw new Error('RabbitMQ channel is not initialized');
     }
@@ -77,7 +107,7 @@ export class RabbitMQService {
   public async consume(
     queue: string,
     routingKey: string,
-    handler: (msg: ConsumeMessage) => Promise<void>
+    handler: (msg: any) => Promise<void>
   ): Promise<void> {
     if (!this.channel) {
       await this.connect();

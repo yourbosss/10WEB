@@ -8,7 +8,7 @@ export class LessonController extends ControllerWrapper {
     const { courseId } = req.params;
 
     if (!mongoose.Types.ObjectId.isValid(courseId)) {
-      res.status(400).json({ message: 'Неверный ID курса' });
+      res.status(400).json({ message: 'Invalid course ID' });
       return;
     }
 
@@ -20,12 +20,12 @@ export class LessonController extends ControllerWrapper {
     const { title, content, courseId, order } = req.body;
 
     if (!title || !content || !courseId) {
-      res.status(400).json({ message: 'Название, содержание и ID курса обязательны' });
+      res.status(400).json({ message: 'Title, content and course ID are required' });
       return;
     }
 
     if (!mongoose.Types.ObjectId.isValid(courseId)) {
-      res.status(400).json({ message: 'Неверный ID курса' });
+      res.status(400).json({ message: 'Invalid course ID' });
       return;
     }
 
@@ -45,14 +45,14 @@ export class LessonController extends ControllerWrapper {
     const updateData = req.body;
 
     if (!mongoose.Types.ObjectId.isValid(lessonId)) {
-      res.status(400).json({ message: 'Неверный ID урока' });
+      res.status(400).json({ message: 'Invalid lesson ID' });
       return;
     }
 
     const lesson = await Lesson.findByIdAndUpdate(lessonId, updateData, { new: true }).exec();
 
     if (!lesson) {
-      res.status(404).json({ message: 'Урок не найден' });
+      res.status(404).json({ message: 'Lesson not found' });
       return;
     }
 
@@ -63,17 +63,17 @@ export class LessonController extends ControllerWrapper {
     const lessonId = req.params.id;
 
     if (!mongoose.Types.ObjectId.isValid(lessonId)) {
-      res.status(400).json({ message: 'Неверный ID урока' });
+      res.status(400).json({ message: 'Invalid lesson ID' });
       return;
     }
 
     const lesson = await Lesson.findByIdAndDelete(lessonId).exec();
 
     if (!lesson) {
-      res.status(404).json({ message: 'Урок не найден' });
+      res.status(404).json({ message: 'Lesson not found' });
       return;
     }
 
-    res.json({ message: 'Урок удалён' });
+    res.json({ message: 'Lesson deleted' });
   });
 }

@@ -8,7 +8,6 @@ const commentController = new CommentController();
 
 router.get('/', commentController.getComments);
 
-// Создавать комментарии могут авторизованные пользователи (все роли)
 router.post(
   '/',
   authenticateToken,
@@ -16,11 +15,10 @@ router.post(
   commentController.createComment
 );
 
-// Удалять комментарии могут автор и админ
 router.delete(
   '/:id',
   authenticateToken,
-  authorizeRoles('admin', 'teacher', 'student'), // проверка в контроллере по авторству
+  authorizeRoles('admin', 'teacher', 'student'), 
   commentController.deleteComment
 );
 

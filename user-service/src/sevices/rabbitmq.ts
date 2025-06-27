@@ -1,8 +1,8 @@
 import amqp, { ConsumeMessage } from 'amqplib';
 
 export class RabbitMQService {
-  private connection: any = null; // убрали тип Connection для избежания ошибок
-  private channel: any = null;    // убрали тип Channel
+  private connection: any = null; 
+  private channel: any = null;   
   private readonly url: string;
   private readonly exchangeName: string;
 
@@ -14,7 +14,6 @@ export class RabbitMQService {
     this.exchangeName = exchangeName;
   }
 
-  // Подключение к RabbitMQ (только соединение)
   private async createConnection(): Promise<void> {
     if (this.connection) {
       await this.closeConnection();
@@ -22,7 +21,7 @@ export class RabbitMQService {
     this.connection = await amqp.connect(this.url);
 
     if (!this.connection) {
-      throw new Error('Не удалось установить соединение с RabbitMQ');
+      throw new Error('Failed to establish connection with RabbitMQ');
     }
 
     this.connection.on('error', (err: any) => {
@@ -36,15 +35,14 @@ export class RabbitMQService {
     });
   }
 
-  // Создание канала и обменника
   private async createChannel(): Promise<void> {
     if (!this.connection) {
-      throw new Error('Нет активного соединения для создания канала');
+      throw new Error('No active connection to create channel');
     }
     this.channel = await this.connection.createChannel();
 
     if (!this.channel) {
-      throw new Error('Не удалось создать канал RabbitMQ');
+      throw new Error('Failed to create RabbitMQ channel');
     }
 
     await this.channel.assertExchange(this.exchangeName, 'direct', { durable: true });
@@ -59,24 +57,21 @@ export class RabbitMQService {
     });
   }
 
-  // Полное подключение (соединение + канал)
   public async connect(): Promise<void> {
     await this.createConnection();
     await this.createChannel();
     console.log('RabbitMQ connected and channel created');
   }
 
-  // Публикация сообщения с проверкой подключения
   public async publish(routingKey: string, message: object): Promise<boolean> {
     if (!this.channel) {
       await this.connect();
-      if (!this.channel) throw new Error('Канал RabbitMQ не инициализирован');
+      if (!this.channel) throw new Error('RabbitMQ channel not initialized');
     }
     const buffer = Buffer.from(JSON.stringify(message));
     return this.channel.publish(this.exchangeName, routingKey, buffer, { persistent: true });
   }
 
-  // Подписка на очередь с обработчиком
   public async consume(
     queue: string,
     routingKey: string,
@@ -84,7 +79,7 @@ export class RabbitMQService {
   ): Promise<void> {
     if (!this.channel) {
       await this.connect();
-      if (!this.channel) throw new Error('Канал RabbitMQ не инициализирован');
+      if (!this.channel) throw new Error('RabbitMQ channel not initialized');
     }
 
     await this.channel.assertQueue(queue, { durable: true });
@@ -99,15 +94,14 @@ export class RabbitMQService {
           await handler(msg);
           this.channel.ack(msg);
         } catch (err) {
-          console.error('Ошибка обработки сообщения:', err);
-          this.channel.nack(msg, false, true); // повторная попытка
+          console.error('Message processing error:', err);
+          this.channel.nack(msg, false, true); // retry
         }
       },
       { noAck: false }
     );
   }
 
-  // Закрытие канала
   public async closeChannel(): Promise<void> {
     if (this.channel) {
       await this.channel.close();
@@ -116,7 +110,6 @@ export class RabbitMQService {
     }
   }
 
-  // Закрытие соединения
   public async closeConnection(): Promise<void> {
     if (this.connection) {
       await this.connection.close();
@@ -125,15 +118,12 @@ export class RabbitMQService {
     }
   }
 
-  // Полное закрытие (канал + соединение)
   public async close(): Promise<void> {
     await this.closeChannel();
     await this.closeConnection();
   }
 
-  // Проверка статуса
   public isConnected(): boolean {
     return this.connection !== null && this.channel !== null;
   }
 }
-

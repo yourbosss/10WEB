@@ -8,21 +8,20 @@ export const handleUserMessage = async (msg: any) => {
     if (type === 'REGISTER_USER') {
       const { firstName, lastName, username, password, role } = payload;
       if (!firstName || !lastName || !username || !password) {
-        console.warn('Пропущены обязательные поля');
+        console.warn('Missing required fields');
         return;
       }
       const existingUser = await User.findOne({ username });
       if (existingUser) {
-        console.warn('Пользователь уже существует:', username);
+        console.warn('User already exists:', username);
         return;
       }
       const hashedPassword = await bcrypt.hash(password, 10);
       const newUser = new User({ firstName, lastName, username, password: hashedPassword, role });
       await newUser.save();
-      console.log('Пользователь зарегистрирован:', username);
+      console.log('User registered:', username);
     }
-    // Можно добавить обработку других типов сообщений
   } catch (err) {
-    console.error('Ошибка обработки сообщения:', err);
+    console.error('Error processing message:', err);
   }
 };

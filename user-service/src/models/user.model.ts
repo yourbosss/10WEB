@@ -17,10 +17,9 @@ const userSchema = new Schema<IUser>(
   {
     timestamps: true,
     toJSON: {
-      virtuals: false, // отключаем виртуалы, чтобы не использовать this._id
+      virtuals: false, 
       versionKey: false,
       transform: (_, ret) => {
-        // Преобразуем _id в строку id и удаляем _id
         ret.id = ret._id.toString();
         delete ret._id;
       },

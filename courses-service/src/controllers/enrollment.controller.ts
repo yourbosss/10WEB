@@ -9,12 +9,12 @@ export class EnrollmentController extends ControllerWrapper {
         const { courseId } = req.body;
 
         if (!userId) {
-            res.status(401).json({ message: 'Неавторизованный' });
+            res.status(401).json({ message: 'Unauthorized' });
             return;
         }
 
         if (!courseId || !mongoose.Types.ObjectId.isValid(courseId)) {
-            res.status(400).json({ message: 'Неверный ID курса' });
+            res.status(400).json({ message: 'Invalid course ID' });
             return;
         }
 
@@ -24,7 +24,7 @@ export class EnrollmentController extends ControllerWrapper {
         }).exec();
 
         if (existing) {
-            res.status(400).json({ message: 'Вы уже записаны на этот курс' });
+            res.status(400).json({ message: 'You are already enrolled in this course' });
             return;
         }
 
@@ -42,7 +42,7 @@ export class EnrollmentController extends ControllerWrapper {
         const userId = (req as any).user?.id;
 
         if (!userId) {
-            res.status(401).json({ message: 'Неавторизованный' });
+            res.status(401).json({ message: 'Unauthorized' });
             return;
         }
 

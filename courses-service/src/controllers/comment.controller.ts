@@ -8,7 +8,7 @@ export class CommentController extends ControllerWrapper {
         const { courseId, lessonId } = req.query;
 
         if (!courseId || !mongoose.Types.ObjectId.isValid(courseId as string)) {
-            res.status(400).json({ message: 'Неверный ID курса' });
+            res.status(400).json({ message: 'Invalid course ID' });
             return;
         }
 
@@ -27,22 +27,22 @@ export class CommentController extends ControllerWrapper {
         const { courseId, lessonId, content } = req.body;
 
         if (!userId) {
-            res.status(401).json({ message: 'Неавторизованный' });
+            res.status(401).json({ message: 'Unauthorized' });
             return;
         }
 
         if (!courseId || !content) {
-            res.status(400).json({ message: 'Курс и содержание обязательны' });
+            res.status(400).json({ message: 'Course and content are required' });
             return;
         }
 
         if (!mongoose.Types.ObjectId.isValid(courseId)) {
-            res.status(400).json({ message: 'Неверный ID курса' });
+            res.status(400).json({ message: 'Invalid course ID' });
             return;
         }
 
         if (lessonId && !mongoose.Types.ObjectId.isValid(lessonId)) {
-            res.status(400).json({ message: 'Неверный ID урока' });
+            res.status(400).json({ message: 'Invalid lesson ID' });
             return;
         }
 
@@ -64,23 +64,23 @@ export class CommentController extends ControllerWrapper {
         const userRole = (req as any).user?.role;
 
         if (!mongoose.Types.ObjectId.isValid(commentId)) {
-            res.status(400).json({ message: 'Неверный ID комментария' });
+            res.status(400).json({ message: 'Invalid comment ID' });
             return;
         }
 
         const comment = await Comment.findById(commentId).exec();
         if (!comment) {
-            res.status(404).json({ message: 'Комментарий не найден' });
+            res.status(404).json({ message: 'Comment not found' });
             return;
         }
 
         if (comment.userId.toString() !== userId && userRole !== 'admin') {
-            res.status(403).json({ message: 'Нет прав на удаление комментария' });
+            res.status(403).json({ message: 'No permission to delete comment' });
             return;
         }
 
         await comment.deleteOne();
 
-        res.json({ message: 'Комментарий удалён' });
+        res.json({ message: 'Comment deleted' });
     });
 }

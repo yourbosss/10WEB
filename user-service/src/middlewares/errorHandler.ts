@@ -6,19 +6,15 @@ export const errorHandler = (
   res: Response,
   next: NextFunction
 ): void => {
-  // Логируем ошибку в консоль (можно заменить на более продвинутый логгер)
-  console.error(`[${new Date().toISOString()}] Ошибка:`, err.message);
+  console.error(`[${new Date().toISOString()}] Error:`, err.message);
 
-  // Если заголовки уже отправлены, передаём ошибку дальше
   if (res.headersSent) {
     return next(err);
   }
 
-  // Формируем ответ клиенту
   res.status(500).json({
     success: false,
-    message: err.message || 'Внутренняя ошибка сервера',
-    // В режиме разработки добавляем стек ошибки для отладки
+    message: err.message || 'Internal server error',
     stack: process.env.NODE_ENV === 'development' ? err.stack : undefined,
   });
 };
