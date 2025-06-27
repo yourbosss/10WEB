@@ -1,14 +1,11 @@
-FROM node:18-alpine AS builder
+FROM node:18-alpine
 
 WORKDIR /app
 
 COPY package*.json ./
 
-RUN yarn install --frozen-lockfile --production=false
+RUN yarn install
 
-COPY tsconfig.json ./
-COPY src ./src
+COPY . .
 
-EXPOSE 5000
-
-CMD ["node", "dist/app.js"]
+CMD ["yarn", "run", "dev"]

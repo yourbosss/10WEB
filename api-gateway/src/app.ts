@@ -4,9 +4,9 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
-import { authenticateToken } from './src/middlewares/authenticateToken';
-import { loggingMiddleware } from './src/middlewares/loggingMiddleware';
-import { errorHandler } from './src/middlewares/errorHandler';
+import { authenticateToken } from './middlewares/authenticateToken';
+import { loggingMiddleware } from './middlewares/loggingMiddleware';
+import { errorHandler } from './middlewares/errorHandler';
 
 const app = express();
 

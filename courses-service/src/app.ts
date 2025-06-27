@@ -3,14 +3,14 @@ import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
 
-import courseRoutes from './src/routes/course.routes';
-import lessonRoutes from './src/routes/lesson.routes';
-import commentRoutes from './src/routes/comment.routes';
-import enrollmentRoutes from './src/routes/enrollment.routes';
-import tagRoutes from './src/routes/tag.routes';
+import courseRoutes from './routes/course.routes';
+import lessonRoutes from './routes/lesson.routes';
+import commentRoutes from './routes/comment.routes';
+import enrollmentRoutes from './routes/enrollment.routes';
+import tagRoutes from './routes/tag.routes';
 
-import { errorHandler } from './src/middlewares/errorHandler';
-import { loggingMiddleware } from './src/middlewares/loggingMiddleware';
+import { errorHandler } from './middlewares/errorHandler';
+import { loggingMiddleware } from './middlewares/loggingMiddleware';
 
 const app = express();
 
